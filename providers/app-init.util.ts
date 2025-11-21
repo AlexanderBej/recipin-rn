@@ -1,7 +1,7 @@
 import { onAuthStateChanged } from "firebase/auth";
 
-import { ensureUserProfile } from "@/api/services/auth.service";
-import { AppDispatch } from "@/store/store";
+import { ensureUserProfile } from "@/api/services/index";
+import { AppDispatch } from "@/store/index";
 import {
   setAuthLoading,
   userSignedIn,

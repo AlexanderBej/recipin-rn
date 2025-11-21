@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { store } from '@/store/store';
+import { store } from '@/store/index';
 
 export type StoreStatus = 'idle' | 'loading' | 'ready' | 'error';
 

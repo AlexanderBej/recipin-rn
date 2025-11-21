@@ -1,6 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
-import { FireDate } from '@api/types';
+import { FireDate } from '@/api/types/index';
+
 
 export function toMillis(v: FireDate): number | null {
   // v is only a Timestamp if it actually has toMillis()

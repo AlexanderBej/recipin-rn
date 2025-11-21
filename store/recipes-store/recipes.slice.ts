@@ -4,12 +4,14 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 
-import { RecipeCard, RecipeEntity } from "@/api/models/recipe.interface";
 import {
+  RecipeCard,
+  RecipeEntity,
   ListRecipeCardsOptions,
   ListRecipeCardsResult,
   RecipeCardFilters,
-} from "@/api/models/search.interface";
+} from "@/api/models/index";
+
 import {
   addRecipePair,
   deleteRecipePair,
@@ -18,9 +20,12 @@ import {
   listRecipeCardsByOwnerPaged,
   saveSoloRating,
   toggleRecipeFavorite,
-} from "@/api/services/recipes.service";
-import { CreateRecipeInput, RatingCategory } from "@/api/types/recipes.types";
-import { createAppAsyncThunk } from "@/api/types/store.types";
+} from "@/api/services/index";
+import {
+  CreateRecipeInput,
+  RatingCategory,
+  createAppAsyncThunk,
+} from "@/api/types/index";
 import { RootState } from "../store";
 
 export const cardsAdapter = createEntityAdapter<RecipeCard, string>({
@@ -96,6 +101,7 @@ export const fetchMyRecipeCardsPage = createAppAsyncThunk<
       console.log("call API");
 
       const res = await listRecipeCardsByOwnerPaged(uid, payload);
+      console.log("and get", res);
 
       // include filters in the payload so reducer can remember them if it wants
       return { ...res, filters };

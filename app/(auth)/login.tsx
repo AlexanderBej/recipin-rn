@@ -13,8 +13,8 @@ import { useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
 
 import { theme } from '@/constants/theme/index';
-import { useGoogleLogin } from '@/hooks/use-google-login';
-import { selectAuthStatus } from '@/store/auth-store/auth.selectors';
+import { useGoogleLogin } from '@/hooks';
+import { selectAuthStatus } from '@/store/index';
 
 const LoginScreen: React.FC = () => {
   const router = useRouter();

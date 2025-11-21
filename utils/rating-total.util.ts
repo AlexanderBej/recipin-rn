@@ -1,5 +1,5 @@
-import { RATING_CATEGORIES } from '@api/misc';
-import { RatingCategory } from '@api/types';
+import { RatingCategory } from "@/api/types/index";
+import { RATING_CATEGORIES } from "@/constants/recipes.const";
 
 export function getRatingAverage(categories?: Partial<Record<RatingCategory, number>>): number {
   if (!categories) return 0;

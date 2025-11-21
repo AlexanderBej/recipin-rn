@@ -1,10 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { PlanItem } from '@/api/models/planner.interface';
-import { addPlanItem, listPlanItemsForRange, removePlanItemFromDb } from '@/api/services/planner.service';
-import { createAppAsyncThunk } from '@/api/types/store.types';
-import { computeThreeWeekWindow, groupPlanItemsByDate } from '@/utils/planner.util';
-import { getWeekStart } from '@/utils/week-start.util';
+import { PlanItem } from '@/api/models/index';
+import { addPlanItem, listPlanItemsForRange, removePlanItemFromDb } from '@/api/services/index';
+import { createAppAsyncThunk } from '@/api/types/index';
+import { computeThreeWeekWindow, groupPlanItemsByDate, getWeekStart } from '@/utils/index';
 import { RootState } from '../store';
 
 

@@ -3,14 +3,13 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { TagDef } from '@/api/models/recipe.interface';
-import { RecipeCardFilters } from '@/api/models/search.interface';
-import { RECIPE_CATEGORIES, TagCategory } from '@/api/types/recipes.types';
+import { TagDef, RecipeCardFilters } from '@/api/models/index';
+import { RECIPE_CATEGORIES, TagCategory } from '@/api/types/index';
 import { TAGS } from '@/constants/recipes.const';
-import { theme } from '../constants/theme/index';
-import { BottomSheet } from './ui/bottom-sheet';
-import { Button } from './ui/button';
-import { Chip } from './ui/chip';
+import { theme } from '../../constants/theme/index';
+import { BottomSheet } from '../ui/bottom-sheet';
+import { Button } from '../ui/button';
+import { Chip } from '../ui/chip';
 
 
 

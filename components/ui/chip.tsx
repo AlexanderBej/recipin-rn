@@ -1,5 +1,3 @@
-import { theme } from '@/constants/theme/index';
-import { displayTag } from '@/utils/formatters.util';
 import React from 'react';
 import {
     Pressable,
@@ -8,6 +6,9 @@ import {
     Text,
     ViewStyle,
 } from 'react-native';
+
+import { theme } from '@/constants/theme/index';
+import { displayTag } from '@/utils/index';
 
 export interface ChipProps {
   tag: string;
@@ -39,7 +40,7 @@ export const Chip: React.FC<ChipProps> = ({ tag, active = false, onToggle, style
 const styles = StyleSheet.create({
   base: {
     paddingVertical: theme.spacing[2],  // 8
-    paddingHorizontal: theme.spacing[3], // 12
+    paddingHorizontal: theme.spacing[2], // 12
     backgroundColor: theme.colors.bgCard,
     borderRadius: theme.radius.md, // 12
     flexDirection: 'row',
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: theme.colors.textSecondary,
-    fontSize: 14,
+    fontSize: 11,
   },
   active: {
     backgroundColor: theme.colors.primaryDark,

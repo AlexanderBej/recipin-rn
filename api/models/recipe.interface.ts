@@ -8,7 +8,7 @@ export interface RecipeCard {
   category: RecipeCategory;
   imageUrl?: string;
   excerpt?: string | null;
-  tags: string[];
+  tags?: string[];
   difficulty?: RecipeDifficulty;
   ratingCategories?: Partial<Record<RatingCategory, number>>;
   isFavorite?: boolean;
@@ -35,4 +35,19 @@ export interface Ingredient {
 export interface TagDef {
   id: string; // 'vegan'
   label: string; // 'Vegan'
+}
+
+
+export interface CreateRecipeForm {
+  title: string;
+  category: RecipeCategory;
+  description?: string;
+  ingredients: Ingredient[];
+  tags?: string[];
+  imageURL?: string;
+  steps: string[];
+  cookMinutes?: number;
+  prepMinutes?: number;
+  servings?: number;
+  difficulty?: RecipeDifficulty;
 }

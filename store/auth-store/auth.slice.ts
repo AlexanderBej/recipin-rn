@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { MinimalUser } from '@/api/models/user.interface';
+import { MinimalUser } from '@/api/models/index';
 // import { updateUserDisplayName } from '@api/services';
 // import { createAppAsyncThunk } from '@api/types';
 

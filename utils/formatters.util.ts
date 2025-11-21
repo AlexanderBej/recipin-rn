@@ -1,4 +1,4 @@
-import { Ingredient } from '@api/models';
+import { Ingredient } from "@/api/models/index";
 
 export function toHoursAndMinutes(totalMinutes: number) {
   const hours = Math.floor(totalMinutes / 60);

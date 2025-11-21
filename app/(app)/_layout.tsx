@@ -1,10 +1,11 @@
 // app/(app)/_layout.tsx
+import { theme } from "@/constants/theme/index";
 import { Stack } from "expo-router";
 import React from "react";
 
 export default function AppLayout() {
   return (
-    <Stack>
+    <Stack screenOptions={{contentStyle: {backgroundColor: theme.colors.bgMain}, headerStyle: {backgroundColor: theme.colors.bgCard}}}>
       {/* Bottom tab navigator lives here */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 

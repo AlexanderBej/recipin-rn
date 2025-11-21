@@ -1,4 +1,4 @@
-import { GroceryItem, GroceryRecipe } from '@api/models';
+import { GroceryItem, GroceryRecipe } from "@/api/models/index";
 
 export function buildIngredientText(
   ingredients: GroceryItem[],

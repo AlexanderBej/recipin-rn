@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { GroceryRecipe } from '@api/models';
+import { GroceryRecipe } from '@/api';
 
 export interface GroceryState {
   recipes: GroceryRecipe[];

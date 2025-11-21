@@ -1,6 +1,7 @@
-import { PlanItem } from '@api/models';
-import { MealSlot } from '@api/types';
 import { addDays, formatISO } from 'date-fns';
+
+import { PlanItem } from '@/api/models/index';
+import { MealSlot } from '@/api/types/index';
 
 export const getItemsForSlot = (items: PlanItem[], date: string, meal: MealSlot): PlanItem[] =>
   items.filter((item) => item.date === date && item.meal === meal);

@@ -1,9 +1,9 @@
 import { addDays, formatISO } from 'date-fns';
 import { createSelector } from '@reduxjs/toolkit';
 
-import { MealSlot, RootState } from '@api/types';
-import { MEAL_SLOTS } from '@api/misc';
 import { selectPlannerByDate } from './planner.selectors';
+import { MealSlot, RootState } from '@/api';
+import { MEAL_SLOTS } from '@/constants/planner.const';
 
 // 'YYYY-MM-DD' -> { breakfast?: boolean; lunch?: boolean; ... }
 export type WeekGrid = Record<string, Partial<Record<MealSlot, boolean>>>;

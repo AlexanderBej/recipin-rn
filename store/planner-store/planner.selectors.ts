@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { MealSlot } from '@/api/types/planner.types';
+import { MealSlot } from '@/api/types/index';
 import { RootState } from '../store';
 import { PlannerByDate } from './planner.slice';
 

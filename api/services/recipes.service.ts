@@ -19,7 +19,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 
-import { makeTitleSearch } from '@/utils/search.util';
+import { makeTitleSearch } from '@/utils/index';
 import { db } from '../../providers/firebase';
 import { RecipeCard, RecipeEntity } from '../models/recipe.interface';
 import { ListRecipeCardsOptions, ListRecipeCardsResult } from '../models/search.interface';

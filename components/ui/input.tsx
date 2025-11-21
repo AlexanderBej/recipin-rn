@@ -122,7 +122,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.neutral,
     borderWidth: 1,
     borderRadius: theme.radius.lg,
-    paddingHorizontal: theme.spacing[4],
+    // paddingHorizontal: theme.spacing[4],
+    // paddingVertical: theme.spacing[3],
+    padding: theme.spacing[4],
     // shadow for focus state
     shadowColor: theme.colors.primary,
     shadowOffset: { width: 0, height: 0 },
@@ -133,9 +135,10 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: theme.spacing[3],
+    // paddingVertical: theme.spacing[3],
     color: theme.colors.textPrimary,
     fontSize: 16,
+    marginLeft: theme.spacing[2]
   },
   inputWithPrefix: {
     marginLeft: theme.spacing[2],

@@ -1,17 +1,20 @@
 import { Stack } from "expo-router";
 import React from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Provider, useSelector } from "react-redux";
 
-import { AppInitializer } from "@/store/app-initializer";
-import { selectAppBootState } from "@/store/app.selectors";
-import { selectAuthStatus } from "@/store/auth-store/auth.selectors";
-import { store } from "@/store/store";
+import {
+  AppInitializer,
+  selectAppBootState,
+  selectAuthStatus,
+  store,
+} from "@/store/index";
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
+import { theme } from "../constants/theme/index";
 
 function RootNavigation() {
   const { booting } = useSelector(selectAppBootState);
@@ -47,14 +50,16 @@ function RootNavigation() {
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Provider store={store}>
-        <AppInitializer>
-          <BottomSheetModalProvider>
-            <RootNavigation />
-          </BottomSheetModalProvider>
-        </AppInitializer>
-      </Provider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.bgMain }}>
+      <View style={styles.background}>
+        <Provider store={store}>
+          <AppInitializer>
+            <BottomSheetModalProvider>
+              <RootNavigation />
+            </BottomSheetModalProvider>
+          </AppInitializer>
+        </Provider>
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -64,5 +69,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  background: {
+    flex: 1,
+    backgroundColor: theme.colors.bgMain, // your global night color
   },
 });
