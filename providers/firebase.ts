@@ -1,7 +1,12 @@
 import { getApps, initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  initializeAuth,
+  GoogleAuthProvider,
+  // @ts-ignore – available in the React Native bundle, but missing in the types
+  getReactNativePersistence,
+} from "firebase/auth";
 
 const cfg = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -15,6 +20,8 @@ const cfg = {
 
 const app = getApps().length ? getApps()[0] : initializeApp(cfg);
 
-export const auth = getAuth(app);
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);

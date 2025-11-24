@@ -1,20 +1,17 @@
 // app/(auth)/login.tsx
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
-import { useSelector } from 'react-redux';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { SafeAreaView, StyleSheet, Text, View, Image } from "react-native";
+import { useSelector } from "react-redux";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { theme } from '@/constants/theme/index';
-import { useGoogleLogin } from '@/hooks';
-import { selectAuthStatus } from '@/store/index';
+import { theme } from "@/constants/theme/index";
+import { useGoogleLogin } from "@/hooks";
+import { selectAuthStatus } from "@/store/index";
+
+const logo = require("@/assets/images/logo.png");
 
 const LoginScreen: React.FC = () => {
   const router = useRouter();
@@ -22,8 +19,8 @@ const LoginScreen: React.FC = () => {
 
   // Redirect when logged in
   useEffect(() => {
-    if (userStatus === 'authenticated') {
-      router.replace('/(app)/(tabs)');
+    if (userStatus === "authenticated") {
+      router.replace("/(app)/(tabs)");
     }
   }, [userStatus, router]);
 
@@ -40,23 +37,24 @@ const LoginScreen: React.FC = () => {
 
   const { signIn } = useGoogleLogin();
 
-const logGoogleUser = async () => {
-  try {
-    await signIn();
-  } catch (e) {
-    console.log('Google sign-in error', e);
-  }
-};
-
+  const logGoogleUser = async () => {
+    try {
+      await signIn();
+    } catch (e) {
+      console.log("Google sign-in error", e);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.root}>
         {/* Logo */}
         <View style={styles.logoWrapper}>
-          {/* If you have a PNG logo, use it here */}
-          {/* <Image source={require('@/assets/logo.png')} style={styles.logo} /> */}
-          <Text style={styles.appName}>Recipin</Text>
+          <Image
+            source={logo}
+            resizeMode="cover"
+            style={[StyleSheet.absoluteFillObject]}
+          />
         </View>
 
         {/* Card */}
@@ -96,13 +94,13 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 50,
     backgroundColor: theme.colors.bgMain,
   },
   logoWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   // If you have a real logo image:
   // logo: {
@@ -112,7 +110,7 @@ const styles = StyleSheet.create({
   // },
   appName: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.primary,
   },
   card: {
@@ -122,32 +120,32 @@ const styles = StyleSheet.create({
     height: 300,
     backgroundColor: theme.colors.bgCard,
     borderRadius: theme.radius.md,
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: theme.colors.textPrimary,
     marginBottom: theme.spacing[2],
   },
   divider: {
     height: 1,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
     backgroundColor: theme.colors.bgCardLight,
     marginBottom: theme.spacing[4],
   },
   btnRow: {
     flex: 1,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
+    alignSelf: "stretch",
+    justifyContent: "center",
   },
   loginBtn: {
-    width: '100%',
+    width: "100%",
     marginTop: 40,
   },
   btnLabel: {
     color: theme.colors.textPrimary,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

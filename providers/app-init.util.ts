@@ -19,6 +19,8 @@ export const initApp = (dispatch: AppDispatch) => {
   dispatch(setAuthLoading());
 
   const unsubAuth = onAuthStateChanged(auth, async (fbUser) => {
+    console.log('init', fbUser);
+    
     if (!fbUser) {
       dispatch(userSignedOut());
       return;

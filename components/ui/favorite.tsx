@@ -42,5 +42,6 @@ const styles = StyleSheet.create({
     top: theme.spacing[2],
     right: theme.spacing[2],
     zIndex: 10,
+    width: "auto"
   },
 });

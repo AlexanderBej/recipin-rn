@@ -1,40 +1,37 @@
-// app/(tabs)/planner.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { parseISO, isToday, isYesterday, isTomorrow, format } from "date-fns";
-import { useRouter } from "expo-router";
+import { v4 as uuidv4 } from "uuid";
 
-import { AppDispatch, MealSlot, RootState } from "@/api/types";
+import { AppDispatch, RootState } from "@/api/types";
 import {
-  addPlanItemThunk,
   initializePlanner,
-  makeSelectPlanForDate,
+  makeSelectWeekGrid,
   selectPlannerWeekStart,
   setAnchorWeekStart,
 } from "@/store/planner-store";
 import { selectAuthUserId } from "@/store/auth-store";
-import { PlanItem, RecipeCard } from "@/api/models";
 import { getWeekDays, getWeekStart } from "@/utils";
 import { theme } from "@/constants/theme/index";
 
-import PeriodSwitcher from "@/components/planner/period-switcher";
-import WeekTable from "@/components/planner/week-table";
-import SearchSheet from "@/components/sheets/search-sheet";
-import RecipeImg from "@/components/ui/recipe-img"; // adjust path to your RN RecipeImg
 import { Button } from "@/components/ui/button";
-import { fetchRecipeById } from "@/store";
 import { MEAL_SLOTS } from "@/constants/planner.const";
+import { PeriodSwitcher, WeekTable, PlanItemBox } from "@/features";
+import { getRecipesByIds, GroceryItem } from "@/api";
+import { addGroceryRecipe } from "@/store";
 
 export default function PlannerScreen() {
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
 
   const uid = useSelector(selectAuthUserId);
   const anchorWeekStartISO = useSelector(selectPlannerWeekStart);
 
   const anchorWeekStart = useMemo(
-    () => (anchorWeekStartISO ? new Date(anchorWeekStartISO) : getWeekStart(new Date(), 1)),
+    () =>
+      anchorWeekStartISO
+        ? new Date(anchorWeekStartISO)
+        : getWeekStart(new Date(), 1),
     [anchorWeekStartISO]
   );
 
@@ -62,6 +59,11 @@ export default function PlannerScreen() {
 
   const days = useMemo(() => getWeekDays(visibleWeekStart), [visibleWeekStart]);
 
+  const selectWeekGrid = useMemo(makeSelectWeekGrid, []);
+  const { grid, recipeIds } = useSelector((state: RootState) =>
+    selectWeekGrid(state, format(visibleWeekStart, "yyyy-MM-dd"))
+  );
+
   const [selectedDateISO, setSelectedDateISO] = useState<string>(() =>
     format(new Date(), "yyyy-MM-dd")
   );
@@ -70,19 +72,13 @@ export default function PlannerScreen() {
   useEffect(() => {
     if (days.length === 0) return;
 
-    const inThisWeek = days.some((d) => format(d, "yyyy-MM-dd") === selectedDateISO);
+    const inThisWeek = days.some(
+      (d) => format(d, "yyyy-MM-dd") === selectedDateISO
+    );
     if (!inThisWeek) {
       setSelectedDateISO(format(days[0], "yyyy-MM-dd"));
     }
   }, [days, selectedDateISO]);
-
-  const selectPlanForDate = useMemo(makeSelectPlanForDate, []);
-  const itemsForSelectedDate = useSelector((state: RootState) =>
-    selectPlanForDate(state, selectedDateISO)
-  );
-
-  const getItemForSlot = (meal: MealSlot) =>
-    itemsForSelectedDate.find((item) => item.meal === meal);
 
   const formatSelectedDay = (dateISO: string) => {
     const date = parseISO(dateISO);
@@ -92,24 +88,30 @@ export default function PlannerScreen() {
     return format(date, "EEE, dd MMM");
   };
 
-  const handleSearchedRecipe = async (rec: RecipeCard, meal: MealSlot) => {
-    if (!uid) return;
+  const handleGenerateGroceryList = async () => {
+    // setLoading(true);
 
-    const planItem: Omit<PlanItem, "id"> = {
-      date: selectedDateISO,
-      meal,
-      recipeId: rec.id,
-      recipeName: rec.title,
-      recipeImgUrl: rec.imageUrl,
-      userId: uid,
-    };
+    const recipes = await getRecipesByIds(recipeIds);
 
-    await dispatch(addPlanItemThunk({ uid, item: planItem }));
-  };
+    recipes.forEach((recipe) => {
+      const groceryItems: GroceryItem[] = recipe.ingredients.map((ingr) => ({
+        id: uuidv4(),
+        name: ingr.item,
+        quantity: ingr.quantity,
+        unit: ingr.unit,
+        checked: false,
+        sourceRecipeId: [recipe.id],
+      }));
+      dispatch(
+        addGroceryRecipe({
+          items: groceryItems,
+          recipeId: recipe.id,
+          title: recipe.title,
+        })
+      );
+    });
 
-  const handleRecipeTap = (recipeId: string) => {
-    dispatch(fetchRecipeById(recipeId) as any); // or typed thunk if you have it
-    router.push(`/recipe/${recipeId}`);
+    // setLoading(false);
   };
 
   return (
@@ -126,8 +128,8 @@ export default function PlannerScreen() {
 
       <View style={styles.tableWrapper}>
         <WeekTable
-          anchorWeekStart={anchorWeekStart}
-          weekOffset={weekOffset}
+          visibleStart={visibleWeekStart}
+          grid={grid}
           selectedDate={selectedDateISO}
           setSelectedDate={setSelectedDateISO}
         />
@@ -135,66 +137,26 @@ export default function PlannerScreen() {
 
       <View style={styles.dayContainer}>
         <View style={styles.dayHeader}>
-          <Text style={styles.dayHeaderText}>{formatSelectedDay(selectedDateISO)}</Text>
+          <Text style={styles.dayHeaderText}>
+            {formatSelectedDay(selectedDateISO)}
+          </Text>
         </View>
 
         <View style={styles.dayContent}>
           {MEAL_SLOTS.map((meal) => {
-            const isSnack = meal === "snacks";
-            const planItem = getItemForSlot(meal);
-
-            const showBanner = !isSnack || (isSnack && !!planItem);
-            const isRecipe = !!planItem;
-
             return (
-              <View
+              <PlanItemBox
                 key={meal}
-                style={[
-                  styles.mealBase,
-                  showBanner && styles.mealBox,
-                  isSnack && !isRecipe && styles.snackBox,
-                  isRecipe && styles.recipeBox,
-                ]}
-              >
-                {showBanner && (
-                  <Text style={styles.mealType}>
-                    {meal}
-                  </Text>
-                )}
-
-                {isRecipe ? (
-                  <View style={styles.recipeRow}>
-                    <RecipeImg
-                      src={planItem!.recipeImgUrl}
-                      variant="square"
-                      style={styles.plannerImg}
-                    />
-                    <Text
-                      style={styles.recipeName}
-                      numberOfLines={2}
-                      onPress={() => handleRecipeTap(planItem!.recipeId)}
-                    >
-                      {planItem!.recipeName}
-                    </Text>
-                  </View>
-                ) : (
-                  <>
-                    {isSnack && <View style={styles.snackDivider} />}
-                    <SearchSheet
-                      selectedMealCategory={meal}
-                      onRecipeTap={(rec) => handleSearchedRecipe(rec, meal)}
-                      isMainMeal={!isSnack}
-                    />
-                  </>
-                )}
-              </View>
+                meal={meal}
+                selectedDateISO={selectedDateISO}
+              />
             );
           })}
         </View>
       </View>
 
       <View style={styles.footer}>
-        <Button variant="primary" onPress={() => { /* TODO: implement later */ }}>
+        <Button variant="primary" onPress={handleGenerateGroceryList}>
           Generate grocery list
         </Button>
       </View>
@@ -232,63 +194,6 @@ const styles = StyleSheet.create({
   dayContent: {
     marginTop: theme.spacing[4],
     gap: theme.spacing[4],
-  },
-  mealBase: {
-    width: "100%",
-  },
-  mealBox: {
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-    borderRadius: theme.radius.lg,
-    minHeight: 100,
-    padding: theme.spacing[2],
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    width: "80%",
-    position: "relative",
-  },
-  mealType: {
-    position: "absolute",
-    top: theme.spacing[1],
-    left: "50%",
-    transform: [{ translateX: -50 }],
-    textTransform: "capitalize",
-    fontSize: 12,
-    color: theme.colors.primary,
-  },
-  snackBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing[2],
-  },
-  snackDivider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: theme.colors.textSecondary,
-    opacity: 0.4,
-  },
-  recipeBox: {
-    borderColor: "transparent",
-    backgroundColor: theme.colors.bgCard,
-    padding: 0,
-  },
-  recipeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing[5],
-    width: "100%",
-  },
-  plannerImg: {
-    height: 100,
-    width: 100,
-    borderRadius: theme.radius.md,
-  },
-  recipeName: {
-    flex: 1,
-    color: theme.colors.textPrimary,
-    fontSize: 14,
-    fontWeight: "500",
   },
   footer: {
     marginTop: theme.spacing[6],

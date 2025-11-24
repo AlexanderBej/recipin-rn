@@ -83,6 +83,8 @@ export default function PlannerModal({ recipe }: Props) {
         userId: uid,
       };
 
+      console.log('add plan item', planItem, recipe);
+      
       await dispatch(addPlanItemThunk({ uid, item: planItem }));
 
       setOpen(false);

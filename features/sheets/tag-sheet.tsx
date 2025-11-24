@@ -6,7 +6,7 @@ import { theme } from "@/constants/theme/";
 import { TagCategory, TagDef } from "@/api";
 import { TAGS } from "@/constants/recipes.const";
 import { displayTag } from "@/utils";
-import { BottomSheet, Chip } from "../ui";
+import { BottomSheet, Chip } from "../../components/ui";
 
 interface TagSheetProps {
   selected: string[];

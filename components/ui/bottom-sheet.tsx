@@ -38,12 +38,12 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   const snapPoints = useMemo(() => {
     switch (size) {
       case "fullscreen":
-        return ["100%"];
+        return [500, 800];
       case "tall":
-        return ["75%"];
+        return [600, 750];
       case "auto":
       default:
-        return ["CONTENT_HEIGHT"];
+        return [400];
     }
   }, [size]);
 

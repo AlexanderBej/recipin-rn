@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import PagerView from "react-native-pager-view";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { CreateRecipeForm } from "@/api";
 
 export interface CreateProps {
@@ -36,7 +36,11 @@ const CreatePager = forwardRef<CreatePagerRef, Props>(
         onPageSelected={(e) => onPageSelected?.(e.nativeEvent.position)}
       >
         {children.map((child, idx) => (
-          <ScrollView key={idx} showsVerticalScrollIndicator={false} style={styles.page}>
+          <ScrollView
+            key={idx}
+            showsVerticalScrollIndicator={false}
+            style={styles.page}
+          >
             {child}
           </ScrollView>
         ))}
@@ -50,10 +54,10 @@ export default CreatePager;
 const styles = StyleSheet.create({
   pager: {
     flex: 1,
-    paddingTop: 20
+    paddingTop: 20,
   },
 
-page: {
+  page: {
     flex: 1,
-  }
+  },
 });

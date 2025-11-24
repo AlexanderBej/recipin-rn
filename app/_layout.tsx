@@ -15,6 +15,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { theme } from "../constants/theme/index";
+import { ToastProvider } from "@/providers/toast";
 
 function RootNavigation() {
   const { booting } = useSelector(selectAppBootState);
@@ -50,13 +51,17 @@ function RootNavigation() {
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.bgMain }}>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: theme.colors.bgMain }}
+    >
       <View style={styles.background}>
         <Provider store={store}>
           <AppInitializer>
-            <BottomSheetModalProvider>
-              <RootNavigation />
-            </BottomSheetModalProvider>
+            <ToastProvider>
+              <BottomSheetModalProvider>
+                <RootNavigation />
+              </BottomSheetModalProvider>
+            </ToastProvider>
           </AppInitializer>
         </Provider>
       </View>

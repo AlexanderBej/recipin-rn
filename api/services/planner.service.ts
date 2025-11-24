@@ -31,7 +31,7 @@ function mapDocToPlanItem(d: any): PlanItem {
     date: data.date,
     meal: data.meal,
     recipeId: data.recipeId,
-    recipeName: data.name,
+    recipeName: data.recipeName,
     recipeImgUrl: data.recipeImgUrl,
     servings: data.servings,
     notes: data.notes,

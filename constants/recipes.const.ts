@@ -88,7 +88,7 @@ export const CATEGORY_META: Record<RecipeCategory, CategoryMeta> = {
     color: "#A3E635", // lime-400
     icon: (props) =>
       React.createElement(MaterialCommunityIcons, {
-        name: "wheat" as any,
+        name: "french-fries" as any,
         ...props,
       }),
   },

@@ -10,6 +10,7 @@ interface ConfirmModalProps {
   buttonLabel: string;
   loading?: boolean;
   handleConfirm: () => Promise<unknown> | unknown;
+  trigger?: (opts: { open: () => void; disabled: boolean }) => React.ReactNode;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -17,10 +18,17 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   buttonLabel,
   loading,
   handleConfirm,
+  trigger,
 }) => {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const disabled = submitting || !!loading;
+
+  const openModal = () => {
+    if (!disabled) setOpen(true);
+  };
 
   const onConfirmClick = async () => {
     setSubmitting(true);
@@ -29,6 +37,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     try {
       await handleConfirm();
       setOpen(false); // close only on success
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -38,15 +47,15 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   const canClose = !submitting;
 
+  const defaultTrigger = (
+    <Button variant="danger" onPress={openModal} disabled={disabled}>
+      {buttonLabel}
+    </Button>
+  );
+
   return (
     <>
-      <Button
-        variant="danger"
-        onPress={() => setOpen(true)}
-        disabled={submitting || loading}
-      >
-        {buttonLabel}
-      </Button>
+      {trigger ? trigger({ open: openModal, disabled }) : defaultTrigger}
 
       <Modal
         isOpen={open}

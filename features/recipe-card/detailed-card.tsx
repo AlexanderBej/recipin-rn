@@ -2,10 +2,9 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 import { RecipeCard as RecipeCardModel } from "@/api/models/index";
-import RecipeImg from "../ui/recipe-img";
-import { Favorite } from "../ui/favorite";
+import RecipeImg from "../../components/ui/recipe-img";
 import { CATEGORY_META } from "@/constants/recipes.const";
-import { Chip } from "../ui/chip";
+import { Chip } from "../../components/ui/chip";
 import { theme } from "@/constants/theme/index";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -14,7 +13,6 @@ interface Props {
 }
 
 export default function DetailedCard({ recipe }: Props) {
-
   const categoryMeta = CATEGORY_META[recipe.category];
 
   const CategoryIcon = categoryMeta.icon;
@@ -35,11 +33,6 @@ export default function DetailedCard({ recipe }: Props) {
 
   return (
     <View style={styles.container}>
-      <Favorite
-        isFavorite={recipe.isFavorite ?? false}
-        style={styles.favoriteBtn}
-      />
-
       <RecipeImg src={recipe.imageUrl} variant="square" style={styles.img} />
 
       <View style={styles.details}>
@@ -77,7 +70,7 @@ export default function DetailedCard({ recipe }: Props) {
         </Text>
 
         <View style={styles.tagsRow}>
-          {recipe.tags.map((tag) => (
+          {recipe.tags?.map((tag) => (
             <Chip key={tag} tag={tag} active onToggle={() => {}} />
           ))}
         </View>
@@ -92,12 +85,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bgCard,
     borderRadius: 12,
     flexDirection: "row",
-  },
-  favoriteBtn: {
-    position: "absolute",
-    top: theme.spacing[2],
-    left: theme.spacing[2],
-    zIndex: 10,
   },
   img: {
     width: 140,
@@ -120,7 +107,7 @@ const styles = StyleSheet.create({
   catRow: {
     width: "100%",
     justifyContent: "space-between",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   categoryBox: {
     flexDirection: "row",
@@ -134,7 +121,7 @@ const styles = StyleSheet.create({
   },
   difficulty: {
     gap: 1,
-    flexDirection: "row"
+    flexDirection: "row",
   },
   categoryLabel: {
     color: "white",
@@ -150,6 +137,6 @@ const styles = StyleSheet.create({
     flexWrap: "nowrap",
     gap: 6,
     marginTop: 4,
-    overflow: "hidden"
+    overflow: "hidden",
   },
 });

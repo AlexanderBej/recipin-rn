@@ -4,11 +4,14 @@ import { useSelector } from "react-redux";
 
 import { Button } from "@/components/ui/button";
 import { theme } from "@/constants/theme/index";
-import CreatePager, { CreatePagerRef } from "@/components/create-recipe/create-pages";
-import BasicInfo from "@/components/create-recipe/basic-info";
-import Ingredients from "@/components/create-recipe/ingredients";
-import Steps from "@/components/create-recipe/steps";
-import MediaReview from "@/components/create-recipe/media-review";
+import {
+  CreatePagerRef,
+  BasicInfo,
+  Ingredients,
+  Steps,
+  MediaReview,
+  CreatePager,
+} from "@/features";
 
 import { selectAuthUserId } from "@/store/auth-store";
 import { createRecipe } from "@/store/recipes-store";
@@ -32,10 +35,18 @@ export default function CreateScreen() {
 
   const pages = useMemo(
     () => [
-      <BasicInfo key='basic' formData={formData} setFormData={setFormData} />,
-      <Ingredients key='ingredients' formData={formData} setFormData={setFormData} />,
-      <Steps key='steps' formData={formData} setFormData={setFormData} />,
-      <MediaReview key='review' formData={formData} setFormData={setFormData}/>,
+      <BasicInfo key="basic" formData={formData} setFormData={setFormData} />,
+      <Ingredients
+        key="ingredients"
+        formData={formData}
+        setFormData={setFormData}
+      />,
+      <Steps key="steps" formData={formData} setFormData={setFormData} />,
+      <MediaReview
+        key="review"
+        formData={formData}
+        setFormData={setFormData}
+      />,
     ],
     [formData]
   );
@@ -72,10 +83,7 @@ export default function CreateScreen() {
       </View>
 
       {/* Pager */}
-      <CreatePager
-        ref={pagerRef}
-        onPageSelected={(page) => setStep(page)}
-      >
+      <CreatePager ref={pagerRef} onPageSelected={(page) => setStep(page)}>
         {pages}
       </CreatePager>
 

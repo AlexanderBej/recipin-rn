@@ -1,39 +1,25 @@
-// components/planner/WeekTable.tsx
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { addDays, format } from "date-fns";
-import { useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 
-import { RootState } from "@/api/types";
-import { makeSelectWeekGrid } from "@/store/planner-store";
+import { WeekGrid } from "@/store/planner-store";
 import { theme } from "@/constants/theme/index";
 import { MEAL_SLOTS } from "@/constants/planner.const";
 
 interface WeekTableProps {
-  anchorWeekStart: Date;
-  weekOffset: -1 | 0 | 1;
+  visibleStart: Date;
+  grid: WeekGrid;
   selectedDate: string;
   setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const WeekTable: React.FC<WeekTableProps> = ({
-  anchorWeekStart,
-  weekOffset,
+  visibleStart,
+  grid,
   selectedDate,
   setSelectedDate,
 }) => {
-  const visibleStart = useMemo(() => {
-    const d = new Date(anchorWeekStart);
-    d.setDate(d.getDate() + weekOffset * 7);
-    return d;
-  }, [anchorWeekStart, weekOffset]);
-
-  const selectWeekGrid = useMemo(makeSelectWeekGrid, []);
-  const grid = useSelector((state: RootState) =>
-    selectWeekGrid(state, format(visibleStart, "yyyy-MM-dd"))
-  );
-
   const days = useMemo(
     () =>
       Array.from({ length: 7 }).map((_, i) => {
@@ -73,10 +59,7 @@ const WeekTable: React.FC<WeekTableProps> = ({
               >
                 <Text style={styles.headerDay}>{day.labelDay}</Text>
                 <View
-                  style={[
-                    styles.dayCircle,
-                    isToday && styles.dayCircleToday,
-                  ]}
+                  style={[styles.dayCircle, isToday && styles.dayCircleToday]}
                 >
                   <Text style={styles.dayCircleText}>{day.labelNum}</Text>
                 </View>
@@ -98,9 +81,7 @@ const WeekTable: React.FC<WeekTableProps> = ({
                   name={hasMeal ? "checkmark" : "remove"}
                   size={16}
                   color={
-                    hasMeal
-                      ? theme.colors.primary
-                      : theme.colors.textSecondary
+                    hasMeal ? theme.colors.primary : theme.colors.textSecondary
                   }
                 />
               </View>

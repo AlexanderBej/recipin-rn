@@ -1,3 +1,4 @@
+import "react-native-get-random-values";
 import React, { useState } from "react";
 import {
   ScrollView,
@@ -14,7 +15,11 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import { AppDispatch } from "@/api/types";
 import { GroceryItem } from "@/api/models";
-import { removeRecipe, selectRecipesCurrent } from "@/store/recipes-store";
+import {
+  removeRecipe,
+  selectRecipesCurrent,
+  toggleFavorite,
+} from "@/store/recipes-store";
 import {
   addGroceryRecipe,
   makeSelectHasGroceryRecipe,
@@ -24,13 +29,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Chip } from "@/components/ui/chip";
 import { Favorite } from "@/components/ui/favorite";
 import RecipeImg from "@/components/ui/recipe-img";
-import PlannerModal from "@/components/modals/planner-modal";
-import RatingsSheet from "@/components/sheets/ratings-sheet";
-import ConfirmaModal from "@/components/modals/confirm-modal";
 
 import { buildIngredient, formatHoursAndMinutes, toDateOrNull } from "@/utils";
 import { theme } from "@/constants/theme/index";
 import { CATEGORY_META } from "@/constants/recipes.const";
+import { useToast } from "@/providers/toast";
+import { LinearGradient } from "expo-linear-gradient";
+import { ConfirmModal, PlannerModal, RatingsSheet } from "@/features";
 
 export default function RecipeDetailsScreen() {
   const dispatch = useDispatch<AppDispatch>();
@@ -40,6 +45,8 @@ export default function RecipeDetailsScreen() {
   const isRecipeInGrocery = useSelector(
     makeSelectHasGroceryRecipe(recipe?.id ?? "")
   );
+
+  const { showToast } = useToast();
 
   const [portions, setPortions] = useState<number>(recipe?.servings ?? 1);
 
@@ -65,7 +72,21 @@ export default function RecipeDetailsScreen() {
   const updatedAtDate = toDateOrNull(recipe?.updatedAt);
 
   const handleAddToGrocery = () => {
-    if (!recipe) return;
+    if (!recipe) {
+      showToast({
+        type: "error",
+        message: "Recipe could not be found. Maybe refresh?",
+      });
+      return;
+    }
+    if (isRecipeInGrocery) {
+      showToast({
+        type: "warning",
+        message: "Already in grocery list. I'll redirect you (☞ ͡° ͜ʖ ͡°)☞",
+      });
+      router.push("/grocery");
+      return;
+    }
 
     const groceryItems: GroceryItem[] = recipe.ingredients.map((ingr) => ({
       id: uuidv4(),
@@ -85,6 +106,14 @@ export default function RecipeDetailsScreen() {
     );
 
     router.push("/grocery");
+  };
+
+  const handleFavoriteTap = () => {
+    if (recipe.id) {
+      dispatch(
+        toggleFavorite({ recipeId: recipe.id, favorite: !recipe.isFavorite })
+      );
+    }
   };
 
   const handleRecipeRemove = async () => {
@@ -114,13 +143,18 @@ export default function RecipeDetailsScreen() {
           />
 
           {/* Overlay gradient-ish effect if you want – for now just darken bottom */}
-          <View style={styles.imageOverlay} />
+          <LinearGradient
+            colors={["#1e1e1e00", "#1e1e1e00", "#2a2a2a"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
 
           <View style={styles.favoriteWrapper}>
             <Favorite
               small={false}
               isFavorite={recipe?.isFavorite ?? false}
-              // recipeId={recipe?.id ?? ""}
+              onToggle={handleFavoriteTap}
             />
           </View>
 
@@ -187,7 +221,7 @@ export default function RecipeDetailsScreen() {
 
         {/* TAGS + CATEGORY */}
         <View style={styles.tagsRow}>
-          {recipe.tags.map((tag) => (
+          {recipe.tags?.map((tag) => (
             <Chip key={tag} tag={tag} active onToggle={() => {}} />
           ))}
 
@@ -229,11 +263,7 @@ export default function RecipeDetailsScreen() {
             <Text style={styles.sectionHeading}>Ingredients</Text>
             <TouchableOpacity onPress={handleAddToGrocery}>
               <MaterialIcons
-                name={
-                  isRecipeInGrocery
-                    ? "local-grocery-store"
-                    : "local-grocery-store"
-                }
+                name="local-grocery-store"
                 size={24}
                 color={
                   isRecipeInGrocery
@@ -282,7 +312,7 @@ export default function RecipeDetailsScreen() {
         <View style={styles.divider} />
 
         {/* DELETE RECIPE */}
-        <ConfirmaModal
+        <ConfirmModal
           buttonLabel="Delete Recipe"
           message="Are you sure you want to delete this recipe? This process is irreversible!"
           handleConfirm={handleRecipeRemove}
@@ -309,10 +339,6 @@ const styles = StyleSheet.create({
     position: "relative",
     borderRadius: theme.radius.lg,
     overflow: "hidden",
-  },
-  imageOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.15)",
   },
   favoriteWrapper: {
     position: "absolute",

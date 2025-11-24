@@ -6,22 +6,18 @@ import {
   ActivityIndicator,
   StyleProp,
   ImageStyle,
+  ViewStyle,
 } from "react-native";
 
-const placeholderImage = require("@/assets/images/img_placeholder.png");
+const placeholderImage = require("@/assets/images/logo-bg.png");
 
-type RecipeImageVariant =
-  | "card"
-  | "detail"
-  | "thumb"
-  | "square"
-  | "landscape";
+type RecipeImageVariant = "card" | "detail" | "thumb" | "square" | "landscape";
 
 interface Props {
   src?: string | null;
   variant?: RecipeImageVariant;
   rounded?: boolean;
-  style?: StyleProp<ImageStyle>;
+  style?: StyleProp<ImageStyle>; // we’ll treat this as container size
 }
 
 export default function RecipeImg({
@@ -34,8 +30,8 @@ export default function RecipeImg({
   const [loading, setLoading] = useState(true);
 
   const finalSrc = failed || !src ? placeholderImage : { uri: src };
+  console.log("finalSrc", finalSrc);
 
-  // Aspect ratios based on your original variants
   const variantAspect: Record<RecipeImageVariant, number> = {
     card: 1.3,
     detail: 1.6,
@@ -44,14 +40,17 @@ export default function RecipeImg({
     landscape: 1.8,
   };
 
+  const containerStyles: StyleProp<ViewStyle> = [
+    styles.container,
+    rounded && styles.rounded,
+    // If the caller passes explicit size, use that;
+    // otherwise fall back to aspectRatio-based sizing.
+    style,
+    !style && { aspectRatio: variantAspect[variant] },
+  ];
+
   return (
-    <View
-      style={[
-        styles.container,
-        rounded && styles.rounded,
-        { aspectRatio: variantAspect[variant] },
-      ]}
-    >
+    <View style={containerStyles}>
       {loading && (
         <View style={styles.skeleton}>
           <ActivityIndicator size="small" color="#ffffff88" />
@@ -61,12 +60,7 @@ export default function RecipeImg({
       <Image
         source={finalSrc}
         resizeMode="cover"
-        style={[
-          StyleSheet.absoluteFill,
-          styles.image,
-          rounded && styles.rounded,
-          style, // <- ImageStyles only
-        ]}
+        style={[styles.image, rounded && styles.rounded]}
         onError={() => {
           setFailed(true);
           setLoading(false);
@@ -79,16 +73,15 @@ export default function RecipeImg({
 
 const styles = StyleSheet.create({
   container: {
-    // width: "100%",
-    backgroundColor: "#2a2a2a", // neutral background while loading
+    backgroundColor: "#2a2a2a",
     overflow: "hidden",
   },
   rounded: {
     borderRadius: 12,
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: "100%",  // <-- always fill container
+    height: "100%", // <--
   },
   skeleton: {
     ...StyleSheet.absoluteFillObject,

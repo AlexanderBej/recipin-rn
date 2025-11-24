@@ -4,6 +4,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  documentId,
   endAt,
   getDoc,
   getDocs,
@@ -31,6 +32,32 @@ const cardsCol = collection(db, 'recipe_cards');
 
 const toMillis = (v: any): number | null =>
   v && typeof v.toMillis === 'function' ? v.toMillis() : null;
+
+const mapRecipeDoc = (snap: any): RecipeEntity => {
+  const d = snap.data() as any;
+  return {
+    id: snap.id,
+    authorId: d.authorId,
+    title: d.title,
+    titleSearch: makeTitleSearch(d.title),
+    category: d.category,
+    tags: d.tags ?? [],
+    difficulty: d.difficulty ?? null,
+    imageUrl: d.imageUrl ?? null,
+    excerpt: d.excerpt ?? null,
+    description: d.description ?? '',
+    ingredients: d.ingredients ?? [],
+    steps: d.steps ?? [],
+    isFavorite: d.isFavorite,
+    servings: d.servings,
+    prepMinutes: d.prepMinutes,
+    cookMinutes: d.cookMinutes,
+    isPublic: !!d.isPublic,
+    ratingCategories: d.ratingCategories,
+    createdAt: toMillis(d.createdAt),
+    updatedAt: toMillis(d.updatedAt),
+  };
+};
 
 export async function listRecipeCardsByOwnerPaged(
   uid: string,
@@ -167,29 +194,7 @@ export async function getRecipe(id: string): Promise<RecipeEntity | null> {
   const ref = doc(recipesCol, id);
   const snap = await getDoc(ref);
   if (!snap.exists()) return null;
-  const d = snap.data() as any;
-  return {
-    id: snap.id,
-    authorId: d.authorId,
-    title: d.title,
-    titleSearch: makeTitleSearch(d.title),
-    category: d.category,
-    tags: d.tags ?? [],
-    difficulty: d.difficulty ?? null,
-    imageUrl: d.imageUrl ?? null,
-    excerpt: d.excerpt ?? null,
-    description: d.description ?? '',
-    ingredients: d.ingredients ?? [],
-    steps: d.steps ?? [],
-    isFavorite: d.isFavorite,
-    servings: d.servings,
-    prepMinutes: d.prepMinutes,
-    cookMinutes: d.cookMinutes,
-    isPublic: !!d.isPublic,
-    ratingCategories: d.ratingCategories,
-    createdAt: toMillis(d.createdAt),
-    updatedAt: toMillis(d.updatedAt),
-  };
+  return mapRecipeDoc(snap);
 }
 
 export async function addRecipePair(data: CreateRecipeInput) {
@@ -266,4 +271,37 @@ export async function toggleRecipeFavorite(recipeId: string, fav: boolean) {
   ]);
 
   return { id: recipeId, fav };
+}
+
+export async function getRecipesByIds(ids: string[]): Promise<RecipeEntity[]> {
+  // clean & dedupe
+  const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+  if (uniqueIds.length === 0) return [];
+
+  const CHUNK_SIZE = 10; // Firestore 'in' queries support up to 10 elements
+  const chunks: string[][] = [];
+
+  for (let i = 0; i < uniqueIds.length; i += CHUNK_SIZE) {
+    chunks.push(uniqueIds.slice(i, i + CHUNK_SIZE));
+  }
+
+  const found: Record<string, RecipeEntity> = {};
+
+  await Promise.all(
+    chunks.map(async (chunk) => {
+      const q = query(recipesCol, where(documentId(), 'in', chunk));
+      const snap = await getDocs(q);
+
+      snap.forEach((docSnap) => {
+        if (!docSnap.exists()) return;
+        const recipe = mapRecipeDoc(docSnap);
+        found[recipe.id] = recipe;
+      });
+    })
+  );
+
+  // return in the same order as the input `ids` (ignoring missing recipes)
+  return uniqueIds
+    .map((id) => found[id])
+    .filter((r): r is RecipeEntity => !!r);
 }

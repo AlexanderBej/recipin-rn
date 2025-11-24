@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing[3], // works in latest Expo
+    gap: theme.spacing[1], // works in latest Expo
     width: '100%',
   },
   starsRow: {
     flexDirection: 'row',
-    gap: theme.spacing[1],
+    // gap: theme.spacing[1],
   },
   starButton: {
     padding: 4,

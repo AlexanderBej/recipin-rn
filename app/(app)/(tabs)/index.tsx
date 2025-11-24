@@ -9,8 +9,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { FilterSheet } from "@/components/sheets/filter-sheet"; // RN version using bottom sheet
-import RecipeCard from "@/components/recipe-card/recipe-card"; // RN version
 import CardLoading from "@/components/ui/card-loading"; // RN version (or ActivityIndicator wrapper)
 import {
   AppDispatch,
@@ -28,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { RecipeCardFilters } from "@/api/models/index";
 import { Button } from "@/components/ui/button";
 import { theme } from "@/constants/theme/index";
+import { FilterSheet, RecipeCard } from "@/features";
 
 const LibraryScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

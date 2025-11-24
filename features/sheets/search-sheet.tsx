@@ -17,19 +17,21 @@ import { selectAuthUserId } from "@/store/auth-store";
 import { theme } from "@/constants/theme/index";
 
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import {Input} from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import RecipeImg from "@/components/ui/recipe-img"; // adjust path
 
 interface SearchSheetProps {
   selectedMealCategory: RecipeCategory;
   onRecipeTap: (rec: RecipeCard) => void;
   isMainMeal?: boolean;
+  trigger?: (opts: { open: () => void }) => React.ReactNode;
 }
 
 const SearchSheet: React.FC<SearchSheetProps> = ({
   selectedMealCategory,
   onRecipeTap,
   isMainMeal = true,
+  trigger,
 }) => {
   const uid = useSelector(selectAuthUserId);
 
@@ -44,17 +46,15 @@ const SearchSheet: React.FC<SearchSheetProps> = ({
       if (!uid) return;
       setLoading(true);
       try {
-        const { items, nextStartAfterTitle } = await listRecipeCardsByOwnerPaged(
-          uid,
-          {
+        const { items, nextStartAfterTitle } =
+          await listRecipeCardsByOwnerPaged(uid, {
             pageSize: 24,
             startAfterTitle: initial ? null : cursor,
             filters: {
               // category: selectedMealCategory,
               searchTerm,
             },
-          }
-        );
+          });
 
         setRecipes((prev) => (initial ? items : [...prev, ...items]));
         setCursor(nextStartAfterTitle);
@@ -76,19 +76,23 @@ const SearchSheet: React.FC<SearchSheetProps> = ({
     setOpen(false);
   };
 
+  const defaultTrigger = (
+    <TouchableOpacity
+      onPress={() => setOpen(true)}
+      accessibilityLabel="Open search recipe sheet"
+    >
+      <Ionicons
+        name={isMainMeal ? "add-circle" : "add-circle-outline"}
+        size={32}
+        color={isMainMeal ? theme.colors.primary : theme.colors.textPrimary}
+      />
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={styles.root}>
+    <>
       {/* Trigger */}
-      <TouchableOpacity
-        onPress={() => setOpen(true)}
-        accessibilityLabel="Open search recipe sheet"
-      >
-        <Ionicons
-          name={isMainMeal ? "add-circle" : "add-circle-outline"}
-          size={32}
-          color={isMainMeal ? theme.colors.primary : theme.colors.textPrimary}
-        />
-      </TouchableOpacity>
+      {trigger ? trigger({ open: () => setOpen(true) }) : defaultTrigger}
 
       {/* Sheet */}
       <BottomSheet
@@ -148,7 +152,7 @@ const SearchSheet: React.FC<SearchSheetProps> = ({
           </View>
         </View>
       </BottomSheet>
-    </View>
+    </>
   );
 };
 

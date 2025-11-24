@@ -3,10 +3,8 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { RecipeCard as RecipeCardModel } from "@/api/models/index";
 import { getRatingAverage } from "@/utils/index";
-import RecipeImg from "../ui/recipe-img";
-import { StarRating } from "../ui/star-ratings";
-import { Favorite } from "../ui/favorite";
-
+import RecipeImg from "../../components/ui/recipe-img";
+import { StarRating } from "../../components/ui/star-ratings";
 
 interface Props {
   recipe: RecipeCardModel;
@@ -17,10 +15,6 @@ export default function FavoriteCard({ recipe }: Props) {
 
   return (
     <View style={styles.container}>
-      <Favorite
-        isFavorite={recipe.isFavorite ?? false}
-        style={styles.favoriteBtn}
-      />
       <RecipeImg
         src={recipe.imageUrl}
         variant="landscape"
@@ -52,11 +46,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "white",
     marginBottom: 4,
-  },
-  favoriteBtn: {
-    position: "absolute",
-    top: 6,
-    right: 6,
-    zIndex: 10,
   },
 });
